@@ -1,0 +1,46 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// User model represents the users of your application
+model User {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  username  String   @unique
+  name     String   
+  password  String   
+  createdCourses   Course[] 
+  enrolledCourses  Enrollment[] 
+}
+
+model Course {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String?
+  createdAt   DateTime  @default(now())
+  creator     User      @relation(fields: [creatorId], references: [id])
+  creatorId   String    @db.ObjectId
+  students    Enrollment[]   
+  modules     Module[]  
+}
+
+model Module {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String?
+  videoUrl    String
+  course      Course    @relation(fields: [courseId], references: [id])
+  courseId    String    @db.ObjectId
+}
+
+model Enrollment{
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  student        User      @relation(fields: [studentId], references: [id])
+  studentId      String    @db.ObjectId
+  course      Course    @relation(fields: [courseId], references: [id])
+  courseId    String    @db.ObjectId
+}

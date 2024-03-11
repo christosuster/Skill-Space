@@ -2,7 +2,8 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { set, z } from "zod";
+// import {signIn} from "next-auth/react"
+import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -14,71 +15,50 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { signupSchema } from "@/lib/schema";
-import { createUser } from "@/lib/actions";
+// import { signIn } from "@/auth";
+import { signInWithCredentials } from "@/lib/actions";
+import { loginSchema } from "@/lib/schema";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
 
-const SignupPage = () => {
+const LoginPage = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const router = useRouter();
-
-  const form = useForm<z.infer<typeof signupSchema>>({
-    resolver: zodResolver(signupSchema),
+  const form = useForm<z.infer<typeof loginSchema>>({
+    resolver: zodResolver(loginSchema),
     defaultValues: {
-      name: "",
       username: "",
       password: "",
-      confirmPassword: "",
     },
   });
 
-  function onSubmit(values: z.infer<typeof signupSchema>) {
+  async function onSubmit(values: z.infer<typeof loginSchema>) {
     setError("");
     setLoading(true);
-    createUser(values)
+    signInWithCredentials(values)
       .then((res) => {
+        console.log("res", res);
+
         if (res.error) {
           setError(res.error);
           setLoading(false);
-        } else {
-          // setLoading(false);
-          router.push("/signin");
         }
       })
       .catch((err) => {
-        setError("An error occurred");
+        // setError("An error occurred");
         console.error(err);
       });
   }
   return (
     <div className="w-full max-w-xl mx-auto p-4 h-full">
-      <h1 className="text-3xl text-center">Sign Up</h1>
+      <h1 className="text-3xl text-center">Sign In</h1>
       <h1 className="text-center my-2 mb-10">
-        Please fill in the form with your details to create an account
+        Enter your username and password to sign in
       </h1>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <FormField
-            disabled={loading}
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="John Doe" {...field} />
-                </FormControl>
-
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            disabled={loading}
             control={form.control}
             name="username"
             render={({ field }) => (
@@ -93,7 +73,6 @@ const SignupPage = () => {
             )}
           />
           <FormField
-            disabled={loading}
             control={form.control}
             name="password"
             render={({ field }) => (
@@ -107,22 +86,6 @@ const SignupPage = () => {
               </FormItem>
             )}
           />
-          <FormField
-            disabled={loading}
-            control={form.control}
-            name="confirmPassword"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Confirm Password</FormLabel>
-                <FormControl>
-                  <Input placeholder="******" {...field} />
-                </FormControl>
-
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
           {error && <p className="text-red-500 text-center">{error}</p>}
 
           {loading ? (
@@ -139,4 +102,4 @@ const SignupPage = () => {
   );
 };
 
-export default SignupPage;
+export default LoginPage;
