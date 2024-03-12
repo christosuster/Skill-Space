@@ -20,7 +20,8 @@ model User {
 model Course {
   id          String    @id @default(auto()) @map("_id") @db.ObjectId
   title       String
-  description String?
+  description String
+  imageUrl    String
   createdAt   DateTime  @default(now())
   creator     User      @relation(fields: [creatorId], references: [id])
   creatorId   String    @db.ObjectId

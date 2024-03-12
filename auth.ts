@@ -5,36 +5,36 @@ import prisma from "./lib/prisma";
 import { loginSchema } from "./lib/schema";
 import bcrypt from "bcryptjs";
 
-const credentialsConfig = Credentials({
-  async authorize(credentials) {
-    const validatedFields = loginSchema.safeParse(credentials);
+// const credentialsConfig = Credentials({
+//   async authorize(credentials) {
+//     const validatedFields = loginSchema.safeParse(credentials);
 
-    if (!validatedFields.success) {
-      return null;
-    }
+//     if (!validatedFields.success) {
+//       return null;
+//     }
 
-    const user = await prisma.user.findUnique({
-      where: {
-        username: validatedFields.data.username,
-      },
-    });
+//     const user = await prisma.user.findUnique({
+//       where: {
+//         username: validatedFields.data.username,
+//       },
+//     });
 
-    if (!user) {
-      return null;
-    }
+//     if (!user) {
+//       return null;
+//     }
 
-    const passwordMatch = await bcrypt.compare(
-      validatedFields.data.password,
-      user.password
-    );
+//     const passwordMatch = await bcrypt.compare(
+//       validatedFields.data.password,
+//       user.password
+//     );
 
-    if (!passwordMatch) {
-      return null;
-    }
+//     if (!passwordMatch) {
+//       return null;
+//     }
 
-    return user;
-  },
-});
+//     return user;
+//   },
+// });
 
 const config = {
   providers: [
@@ -80,6 +80,44 @@ const config = {
       },
     }),
   ],
+  callbacks: {
+    async jwt({ token, session }) {
+      // console.log("JWT: ", session, token);
+
+      const newToken = {
+        ...token,
+        custom: "Custom field",
+      };
+
+      return newToken;
+    },
+    async session({ session, token }) {
+      // console.log("Session: ", session, token);
+
+      const user = await prisma.user.findUnique({
+        where: {
+          id: token?.sub,
+        },
+      });
+
+      if (!user) {
+        return session;
+      }
+
+      const newSession = {
+        ...session,
+        user: {
+          id: user.id,
+          name: user.name,
+          username: user.username,
+        },
+      };
+
+      return newSession;
+    },
+  },
+  adapter: PrismaAdapter(prisma),
+  session: { strategy: "jwt" },
 } satisfies NextAuthConfig;
 
 export const { handlers, auth, signIn, signOut } = NextAuth(config);

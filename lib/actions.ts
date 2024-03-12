@@ -1,11 +1,11 @@
 "use server";
 
-import { signIn } from "@/auth";
+import { auth, signIn } from "@/auth";
 import { z } from "zod";
 import { loginSchema, signupSchema } from "./schema";
 import prisma from "./prisma";
 import bcrypt from "bcrypt";
-import { redirect } from "next/dist/server/api-utils";
+import { formDataType } from "./types";
 
 export const signInWithCredentials = async (
   values: z.infer<typeof loginSchema>
@@ -108,4 +108,36 @@ export const createUser = async (values: z.infer<typeof signupSchema>) => {
   return {
     success: "User created",
   };
+};
+
+export const addCourse = async (data: formDataType) => {
+  const session = await auth();
+
+  try {
+    const res = await prisma.course.create({
+      data: {
+        title: data.courseTitle,
+        description: data.courseDescription,
+        imageUrl: data.courseImage,
+        creatorId: session?.user?.id!,
+      },
+    });
+
+    if (!res) {
+      return {
+        error: "Could not create the course!",
+        success: null,
+      };
+    }
+
+    return {
+      success: res,
+      error: null,
+    };
+  } catch (error) {
+    return {
+      error: "Unexpected error occured!",
+      success: null,
+    };
+  }
 };

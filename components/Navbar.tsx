@@ -18,6 +18,9 @@ import { useState } from "react";
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const { data: session } = useSession();
+
+  console.log(session?.user);
+
   const links = [
     { href: "/courses", text: "Courses" },
     { href: "/myCourses", text: "My Courses" },
@@ -77,27 +80,26 @@ const Navbar = () => {
       </div>
 
       <div className="flex gap-4">
-        {session &&
-          (session.user ? (
-            <div className="flex gap-4 items-center">
-              <p className="font-bold">Hello, {session.user.name}</p>
+        {session && session.user ? (
+          <div className="flex gap-4 items-center">
+            <p className="font-bold">Hello, {session.user.name}</p>
 
-              {/* <Button onClick={async () => await signOut()}>Sign Out</Button> */}
-              <Button variant={"ghost"} onClick={() => signOut()}>
-                <LogOut />
-              </Button>
-            </div>
-          ) : (
-            <div className="flex gap-4">
-              {/* <Button onClick={async () => await signIn()}>Sign In</Button> */}
-              <Button>
-                <Link href="/signin">Sign In</Link>
-              </Button>
-              <Button>
-                <Link href="/signup">Sign Up</Link>
-              </Button>
-            </div>
-          ))}
+            {/* <Button onClick={async () => await signOut()}>Sign Out</Button> */}
+            <Button variant={"ghost"} onClick={() => signOut()}>
+              <LogOut />
+            </Button>
+          </div>
+        ) : (
+          <div className="flex gap-4">
+            {/* <Button onClick={async () => await signIn()}>Sign In</Button> */}
+            <Button>
+              <Link href="/signin">Sign In</Link>
+            </Button>
+            <Button>
+              <Link href="/signup">Sign Up</Link>
+            </Button>
+          </div>
+        )}
       </div>
     </nav>
   );
