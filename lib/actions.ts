@@ -5,7 +5,7 @@ import { z } from "zod";
 import { loginSchema, signupSchema } from "./schema";
 import prisma from "./prisma";
 import bcrypt from "bcrypt";
-import { formDataType } from "./types";
+import { formDataType, moduleFormDataType } from "./types";
 
 export const signInWithCredentials = async (
   values: z.infer<typeof loginSchema>
@@ -126,6 +126,75 @@ export const addCourse = async (data: formDataType) => {
     if (!res) {
       return {
         error: "Could not create the course!",
+        success: null,
+      };
+    }
+
+    return {
+      success: res,
+      error: null,
+    };
+  } catch (error) {
+    return {
+      error: "Unexpected error occured!",
+      success: null,
+    };
+  }
+};
+
+export const addModule = async (data: moduleFormDataType) => {
+  const session = await auth();
+
+  try {
+    const res = await prisma.module.create({
+      data: {
+        title: data.moduleTitle,
+        description: data.moduleDescription,
+        videoUrl: data.moduleVideo,
+        courseId: data.courseId,
+      },
+    });
+
+    if (!res) {
+      return {
+        error: "Module creation failed!",
+        success: null,
+      };
+    }
+
+    return {
+      success: res,
+      error: null,
+    };
+  } catch (error) {
+    return {
+      error: "Unexpected error occured!",
+      success: null,
+    };
+  }
+};
+
+export const enroll = async (courseId: string) => {
+  const session = await auth();
+
+  if (!session?.user) {
+    return {
+      error: "User not found",
+      success: null,
+    };
+  }
+
+  try {
+    const res = await prisma.enrollment.create({
+      data: {
+        courseId: courseId,
+        studentId: session.user.id!,
+      },
+    });
+
+    if (!res) {
+      return {
+        error: "Enrollment failed!",
         success: null,
       };
     }

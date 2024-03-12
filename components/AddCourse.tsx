@@ -46,7 +46,6 @@ const AddCourse = () => {
         variant: "success",
       });
 
-      setLoading(false);
       router.push(`/myCourses/edit/${res.success?.id}`);
     }
   };
@@ -127,7 +126,7 @@ const AddCourse = () => {
         />
       </div>
       {loading ? (
-        <Button>
+        <Button disabled={loading}>
           <Loader2 className="animate-spin mr-2" />
           Creating Course
         </Button>
