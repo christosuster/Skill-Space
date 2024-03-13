@@ -22,8 +22,9 @@ const Navbar = () => {
   console.log(session?.user);
 
   const links = [
-    { href: "/courses", text: "Courses" },
-    { href: "/myCourses", text: "My Courses" },
+    { href: "/courses", text: "All Courses" },
+    { href: "/enrolled", text: "Enrolled" },
+    { href: "/created", text: "Created" },
     { href: "/addCourse", text: "Add Course" },
   ];
   return (

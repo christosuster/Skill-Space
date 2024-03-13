@@ -1,17 +1,10 @@
 import { auth } from "@/auth";
 import PageHeader from "@/components/PageHeader";
 import ViewCourse from "@/components/ViewCourse";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { toast } from "@/components/ui/use-toast";
 import prisma from "@/lib/prisma";
-import { PlayCircle } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
 import { redirect } from "next/navigation";
-import React from "react";
 
-const viewCoursePage = async ({
+const viewEnrolledCoursePage = async ({
   params,
 }: {
   params: {
@@ -23,6 +16,9 @@ const viewCoursePage = async ({
     where: {
       id: params.id,
     },
+    include: {
+      creator: true,
+    },
   });
 
   if (!course) {
@@ -32,12 +28,6 @@ const viewCoursePage = async ({
   const modules = await prisma.module.findMany({
     where: {
       courseId: course.id,
-    },
-  });
-
-  const creator = await prisma.user.findUnique({
-    where: {
-      id: course.creatorId,
     },
   });
 
@@ -58,4 +48,4 @@ const viewCoursePage = async ({
   );
 };
 
-export default viewCoursePage;
+export default viewEnrolledCoursePage;

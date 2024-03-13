@@ -4,20 +4,11 @@ import { UploadButton } from "@/lib/uploadthing";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { useState } from "react";
-import Image from "next/image";
 import { Button } from "./ui/button";
 import { useToast } from "./ui/use-toast";
-import { moduleFormDataType } from "@/lib/types";
-import { addCourse, addModule } from "@/lib/actions";
+import { addModule } from "@/lib/actions";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "./ui/card";
 
 const AddModule = ({ courseId }: { courseId: string }) => {
   const { toast } = useToast();
@@ -27,7 +18,7 @@ const AddModule = ({ courseId }: { courseId: string }) => {
 
   const handleSubmit = async () => {
     setLoading(true);
-    console.log("Form Submitted", formData);
+    // console.log("Form Submitted", formData);
     if (formData.moduleVideo == "") {
       toast({
         title: "Module must have a video!",
@@ -51,6 +42,13 @@ const AddModule = ({ courseId }: { courseId: string }) => {
         variant: "success",
       });
       setLoading(false);
+      setFormData({
+        moduleTitle: "",
+        moduleDescription: "",
+        moduleVideo: "",
+      });
+
+      setModuleVideo(null);
 
       router.refresh();
     }
@@ -112,13 +110,18 @@ const AddModule = ({ courseId }: { courseId: string }) => {
           <UploadButton
             endpoint="videoUploader"
             onClientUploadComplete={(res) => {
-              setModuleVideo(res[0].url);
               setFormData((prevFormData) => ({
                 ...prevFormData,
                 moduleVideo: res[0].url,
               }));
+              setModuleVideo(res[0].url);
             }}
             onUploadError={(error: Error) => {
+              toast({
+                title: "Error uploading video! Please try again!",
+                variant: "destructive",
+              });
+
               console.log("Error: ", error.message);
             }}
           />

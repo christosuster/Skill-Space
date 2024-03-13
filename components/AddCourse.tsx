@@ -7,10 +7,8 @@ import { useState } from "react";
 import Image from "next/image";
 import { Button } from "./ui/button";
 import { useToast } from "./ui/use-toast";
-import { set } from "zod";
 import { formDataType } from "@/lib/types";
 import { addCourse } from "@/lib/actions";
-import { error } from "console";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 

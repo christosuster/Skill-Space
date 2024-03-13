@@ -1,10 +1,11 @@
 import AddCourse from "@/components/AddCourse";
+import PageHeader from "@/components/PageHeader";
 import React from "react";
 
 const addCoursePage = () => {
   return (
     <div>
-      <h1 className="mt-10 text-3xl text-center">Add Course</h1>
+      <PageHeader text="Add Course" />
       <AddCourse />
     </div>
   );
