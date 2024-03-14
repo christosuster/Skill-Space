@@ -12,23 +12,31 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { getSession, useSession } from "next-auth/react";
-import { useState } from "react";
+import { useSession } from "next-auth/react";
+import { useEffect, useMemo, useState } from "react";
+import { usePathname } from "next/navigation";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const { data: session } = useSession();
 
-  console.log(session?.user);
+  const links: { href: string; text: string }[] = useMemo(() => {
+    if (session && session.user) {
+      return [
+        { href: "/courses", text: "All Courses" },
+        { href: "/enrolled", text: "Enrolled" },
+        { href: "/created", text: "Created" },
+        { href: "/addCourse", text: "Add Course" },
+      ];
+    } else {
+      return [{ href: "/courses", text: "All Courses" }];
+    }
+  }, [session]);
 
-  const links = [
-    { href: "/courses", text: "All Courses" },
-    { href: "/enrolled", text: "Enrolled" },
-    { href: "/created", text: "Created" },
-    { href: "/addCourse", text: "Add Course" },
-  ];
+  const pathname = usePathname();
+
   return (
-    <nav className="flex justify-between items-center p-4">
+    <nav className="flex justify-between items-center mb-5">
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent className="w-[400px] sm:w-[540px]" side={"left"}>
           <SheetHeader className="flex flex-col  h-full">
@@ -49,7 +57,11 @@ const Navbar = () => {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="hover:font-bold text-2xl"
+                  className={`text-2xl hover:underline underline-offset-2  ${
+                    pathname.startsWith(link.href)
+                      ? "text-accent-foreground font-bold"
+                      : ""
+                  }`}
                   onClick={() => setOpen(false)}
                 >
                   {link.text}
@@ -74,7 +86,15 @@ const Navbar = () => {
       </div>
       <div className="gap-4 hidden md:flex">
         {links.map((link) => (
-          <Link key={link.href} href={link.href} className="hover:font-bold">
+          <Link
+            key={link.href}
+            href={link.href}
+            className={`hover:underline underline-offset-2  ${
+              pathname.startsWith(link.href)
+                ? "text-accent-foreground font-bold"
+                : ""
+            }`}
+          >
             {link.text}
           </Link>
         ))}
@@ -85,14 +105,12 @@ const Navbar = () => {
           <div className="flex gap-4 items-center">
             <p className="font-bold">Hello, {session.user.name}</p>
 
-            {/* <Button onClick={async () => await signOut()}>Sign Out</Button> */}
             <Button variant={"ghost"} onClick={() => signOut()}>
               <LogOut />
             </Button>
           </div>
         ) : (
           <div className="flex gap-4">
-            {/* <Button onClick={async () => await signIn()}>Sign In</Button> */}
             <Button>
               <Link href="/signin">Sign In</Link>
             </Button>

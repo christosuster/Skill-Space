@@ -25,7 +25,7 @@ const allCoursesPage = async () => {
       <div className="">
         <div className="my-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {courses.map((course) => (
-            <Link href={`/courses/${course.id}`} key={course.title}>
+            <Link href={`/courses/${course.id}`} key={course.id}>
               <Card className="w-full col-span-1 mx-auto hover:shadow-xl transition duration-300 ease-in-out flex flex-col h-full">
                 <Image
                   src={course.imageUrl}

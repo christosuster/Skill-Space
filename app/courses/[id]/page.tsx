@@ -15,6 +15,7 @@ const ViewUnenrolledCoursePage = async ({
   };
 }) => {
   const session = await auth();
+
   const course = await prisma.course.findUnique({
     where: {
       id: params.id,
@@ -34,12 +35,12 @@ const ViewUnenrolledCoursePage = async ({
     },
   });
 
+  console.log("Session", session?.user?.id);
+
   const enrolled = await prisma.enrollment.findFirst({
     where: {
       studentId: session?.user?.id,
-      AND: {
-        courseId: course.id,
-      },
+      courseId: course.id,
     },
   });
 

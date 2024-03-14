@@ -17,7 +17,6 @@ const AddModule = ({ courseId }: { courseId: string }) => {
   const router = useRouter();
 
   const handleSubmit = async () => {
-    setLoading(true);
     // console.log("Form Submitted", formData);
     if (formData.moduleVideo == "") {
       toast({
@@ -41,7 +40,7 @@ const AddModule = ({ courseId }: { courseId: string }) => {
         title: "Module created successfully!",
         variant: "success",
       });
-      setLoading(false);
+
       setFormData({
         moduleTitle: "",
         moduleDescription: "",
@@ -49,7 +48,7 @@ const AddModule = ({ courseId }: { courseId: string }) => {
       });
 
       setModuleVideo(null);
-
+      setLoading(false);
       router.refresh();
     }
   };
@@ -63,7 +62,14 @@ const AddModule = ({ courseId }: { courseId: string }) => {
 
   return (
     <div className="w-full max-w-xl mx-auto">
-      <form action={handleSubmit} className=" flex flex-col gap-5">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          setLoading(true);
+          handleSubmit();
+        }}
+        className=" flex flex-col gap-5 p-1"
+      >
         <Input
           type="text"
           name="moduleTitle"

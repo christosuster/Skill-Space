@@ -44,7 +44,7 @@ const AddCourse = () => {
         variant: "success",
       });
 
-      router.push(`/myCourses/edit/${res.success?.id}`);
+      router.push(`/created/${res.success?.id}`);
     }
   };
   const [courseImage, setCourseImage] = useState<string | null>(null);
@@ -57,7 +57,11 @@ const AddCourse = () => {
 
   return (
     <form
-      action={handleSubmit}
+      onSubmit={(e) => {
+        e.preventDefault();
+        setLoading(true);
+        handleSubmit();
+      }}
       className="mx-auto w-full max-w-xl my-10 flex flex-col gap-5"
     >
       <Input

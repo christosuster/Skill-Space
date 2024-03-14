@@ -7,6 +7,7 @@ import { useState } from "react";
 import { toast } from "./ui/use-toast";
 import { enroll } from "@/lib/actions";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 type ViewCourseProps = {
   course: {
@@ -43,6 +44,10 @@ const ViewUnenrolledCourse = ({
 }: ViewCourseProps) => {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+  const { data: session } = useSession();
+
+  // console.log("Session", session);
 
   const handleModuleClick = (module: moduleType) => {
     if (!enrolled) {
@@ -104,16 +109,17 @@ const ViewUnenrolledCourse = ({
             </h1>
             <h1 className="col-span-2">{course.createdAt.toDateString()}</h1>
           </div>
-          {loading ? (
-            <Button>Enrolling...</Button>
-          ) : (
-            <Button
-              disabled={!!enrolled}
-              onClick={() => handleEnrollment(course.id)}
-            >
-              {enrolled ? "Enrolled" : "Enroll"}
-            </Button>
-          )}
+          {session &&
+            (loading ? (
+              <Button>Enrolling...</Button>
+            ) : (
+              <Button
+                disabled={!!enrolled}
+                onClick={() => handleEnrollment(course.id)}
+              >
+                {enrolled ? "Enrolled" : "Enroll"}
+              </Button>
+            ))}
         </div>
       </div>
 

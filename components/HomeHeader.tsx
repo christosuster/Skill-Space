@@ -1,6 +1,7 @@
 import React from "react";
 import { Button } from "./ui/button";
 import Image from "next/image";
+import Link from "next/link";
 
 const HomeHeader = () => {
   return (
@@ -12,9 +13,11 @@ const HomeHeader = () => {
           Professional Certificates, and degrees from world-class universities
           and companies.
         </p>
-        <Button className="h-16 w-52" variant={"default"}>
-          Join for Free
-        </Button>
+        <Link href={"/courses"}>
+          <Button className="h-16 w-52" variant={"default"}>
+            Join for Free
+          </Button>
+        </Link>
       </div>
       <div className="col-span-1 ml-auto hidden sm:block">
         <Image src="/headerPic.png" alt="hero" width={500} height={500} />
