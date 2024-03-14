@@ -189,6 +189,20 @@ export const enroll = async (courseId: string) => {
     };
   }
 
+  const res = await prisma.enrollment.findFirst({
+    where: {
+      courseId: courseId,
+      studentId: session.user.id!,
+    },
+  });
+
+  if (res) {
+    return {
+      error: "You are already enrolled in this course!",
+      success: null,
+    };
+  }
+
   try {
     const res = await prisma.enrollment.create({
       data: {
