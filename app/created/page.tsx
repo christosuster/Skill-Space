@@ -12,7 +12,6 @@ import prisma from "@/lib/prisma";
 import { CalendarDays, User2Icon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 
 const createdCoursesPage = async () => {
   const session = await auth();

@@ -1,19 +1,16 @@
 "use client";
 import Link from "next/link";
 import { Button } from "./ui/button";
-import { auth } from "@/auth";
-import { signIn, signOut } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import { LogOut, MenuIcon } from "lucide-react";
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
 } from "@/components/ui/sheet";
 import { useSession } from "next-auth/react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
 
 const Navbar = () => {

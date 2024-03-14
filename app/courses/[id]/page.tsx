@@ -1,11 +1,8 @@
 import { auth } from "@/auth";
 import PageHeader from "@/components/PageHeader";
-import ViewCourse from "@/components/ViewCourse";
 import ViewUnenrolledCourse from "@/components/ViewUnenrolledCourse";
-import { toast } from "@/components/ui/use-toast";
 import prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";
-import React from "react";
 
 const ViewUnenrolledCoursePage = async ({
   params,

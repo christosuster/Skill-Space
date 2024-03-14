@@ -1,6 +1,5 @@
 import AddCourse from "@/components/AddCourse";
 import PageHeader from "@/components/PageHeader";
-import React from "react";
 
 const addCoursePage = () => {
   return (

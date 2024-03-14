@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import AddModule from "@/components/AddModule";
 import PageHeader from "@/components/PageHeader";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import prisma from "@/lib/prisma";
 import Image from "next/image";
 import { redirect } from "next/navigation";
