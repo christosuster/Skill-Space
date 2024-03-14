@@ -9,12 +9,7 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import prisma from "@/lib/prisma";
-import {
-  ArrowRight,
-  ArrowRightSquare,
-  CalendarDays,
-  User2Icon,
-} from "lucide-react";
+import { ArrowRight, CalendarDays, User2Icon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 

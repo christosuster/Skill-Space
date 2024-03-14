@@ -6,6 +6,7 @@ import { loginSchema, signupSchema } from "./schema";
 import prisma from "./prisma";
 import bcrypt from "bcrypt";
 import { formDataType, moduleFormDataType } from "./types";
+import { revalidatePath } from "next/cache";
 
 export const signInWithCredentials = async (
   values: z.infer<typeof loginSchema>
@@ -130,6 +131,8 @@ export const addCourse = async (data: formDataType) => {
       };
     }
 
+    revalidatePath("/", "layout");
+
     return {
       success: res,
       error: null,
@@ -161,6 +164,8 @@ export const addModule = async (data: moduleFormDataType) => {
         success: null,
       };
     }
+
+    revalidatePath("/", "layout");
 
     return {
       success: res,
@@ -198,6 +203,8 @@ export const enroll = async (courseId: string) => {
         success: null,
       };
     }
+
+    revalidatePath("/", "layout");
 
     return {
       success: res,

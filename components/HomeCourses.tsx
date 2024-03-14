@@ -23,6 +23,8 @@ const HomeCourses = async () => {
     },
   });
 
+  console.log(latestCourses[2].students);
+
   return (
     <div className="">
       <h1 className="text-3xl text-center">Latest Courses</h1>
