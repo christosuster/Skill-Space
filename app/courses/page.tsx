@@ -10,8 +10,10 @@ import PageHeader from "@/components/PageHeader";
 import prisma from "@/lib/prisma";
 import Link from "next/link";
 import { CalendarDays, User2Icon } from "lucide-react";
+import { unstable_noStore as noStore } from "next/cache";
 
 const allCoursesPage = async () => {
+  noStore();
   const courses = await prisma.course.findMany({
     include: {
       creator: true,

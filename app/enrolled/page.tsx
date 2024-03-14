@@ -12,8 +12,10 @@ import prisma from "@/lib/prisma";
 import { ArrowRight, CalendarDays, User2Icon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { unstable_noStore as noStore } from "next/cache";
 
 const enrolledPage = async () => {
+  noStore();
   const session = await auth();
 
   const enrolledCourses = await prisma.enrollment.findMany({
