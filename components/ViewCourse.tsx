@@ -5,8 +5,19 @@ import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { useState } from "react";
 import { toast } from "./ui/use-toast";
-import { enroll } from "@/lib/actions";
+import { enroll, unenroll } from "@/lib/actions";
 import { useRouter } from "next/navigation";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 type ViewCourseProps = {
   course: {
@@ -38,6 +49,8 @@ type moduleType = {
 
 const ViewCourse = ({ course, modules, enrolled }: ViewCourseProps) => {
   const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
+
   const router = useRouter();
   const [selectedModule, setSelectedModule] = useState<moduleType | null>(null);
 
@@ -52,21 +65,59 @@ const ViewCourse = ({ course, modules, enrolled }: ViewCourseProps) => {
     setSelectedModule(module);
   };
 
-  const handleEnrollment = async (courseId: string) => {
+  const confirmUnenroll = async (courseId: string) => {
     setLoading(true);
-    const res = await enroll(courseId);
+    const res = await unenroll(courseId);
     if (res.error) {
       toast({ title: res.error, variant: "destructive" });
       setLoading(false);
       return;
     }
-    toast({ title: "Enrolled Successfully", variant: "success" });
-    setLoading(false);
-    router.refresh();
+    toast({
+      title: "Successfully unenrolled from this course.",
+      variant: "success",
+    });
+
+    router.push(`/courses/${courseId}`);
+  };
+
+  const handleEnrollment = async (courseId: string) => {
+    if (enrolled) {
+      setOpen(true);
+      // confirmUnenroll(courseId);
+    } else {
+      setLoading(true);
+
+      const res = await enroll(courseId);
+      if (res.error) {
+        toast({ title: res.error, variant: "destructive" });
+        setLoading(false);
+        return;
+      }
+      toast({ title: "Enrolled Successfully", variant: "success" });
+
+      router.refresh();
+      setLoading(false);
+    }
   };
 
   return (
     <div className="grid grid-cols-12  gap-4">
+      <AlertDialog open={open} onOpenChange={setOpen}>
+        <AlertDialogContent className="">
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Are you sure you want to unenroll from this course?
+            </AlertDialogTitle>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => confirmUnenroll(course.id)}>
+              Confirm
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       <div className="flex justify-center items-center col-span-12 mb-10">
         {selectedModule && (
           <div className="w-full flex flex-col gap-3">
@@ -117,13 +168,13 @@ const ViewCourse = ({ course, modules, enrolled }: ViewCourseProps) => {
             <h1 className="col-span-2">{course.createdAt.toDateString()}</h1>
           </div>
           {loading ? (
-            <Button>Enrolling...</Button>
+            <Button>Please wait...</Button>
           ) : (
             <Button
-              disabled={!!enrolled}
+              variant={enrolled ? "destructive" : "default"}
               onClick={() => handleEnrollment(course.id)}
             >
-              {enrolled ? "Enrolled" : "Enroll"}
+              {enrolled ? "Unenroll" : "Enroll"}
             </Button>
           )}
         </div>

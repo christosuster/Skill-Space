@@ -32,7 +32,7 @@ const ViewUnenrolledCoursePage = async ({
     },
   });
 
-  console.log("Session", session?.user?.id);
+  // console.log("Session", session?.user?.id);
 
   const enrolled = await prisma.enrollment.findFirst({
     where: {

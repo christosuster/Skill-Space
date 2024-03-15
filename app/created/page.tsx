@@ -66,7 +66,7 @@ const createdCoursesPage = async () => {
               </p>
 
               <Link href={`/created/${course.id}`}>
-                <Button>Add Modules</Button>
+                <Button>Edit Course</Button>
               </Link>
             </CardFooter>
           </Card>

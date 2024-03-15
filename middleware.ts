@@ -1,7 +1,6 @@
 import { auth } from "./auth";
 
 const protectedRoutes = ["/enrolled", "/created", "/addCourse"];
-const publicRoutes = ["/signin", "/signup", "/", "/courses", "/courses/[id]"];
 
 export default auth((req) => {
   const { nextUrl } = req;

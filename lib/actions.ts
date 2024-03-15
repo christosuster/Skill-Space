@@ -231,3 +231,126 @@ export const enroll = async (courseId: string) => {
     };
   }
 };
+
+export const unenroll = async (courseId: string) => {
+  const session = await auth();
+
+  if (!session?.user) {
+    return {
+      error: "User not found",
+      success: null,
+    };
+  }
+
+  try {
+    const enrollment = await prisma.enrollment.findFirst({
+      where: {
+        courseId: courseId,
+        studentId: session.user.id!,
+      },
+    });
+
+    if (!enrollment) {
+      return {
+        error: "You are not enrolled in this course!",
+        success: null,
+      };
+    }
+
+    const res = await prisma.enrollment.delete({
+      where: {
+        id: enrollment.id,
+      },
+    });
+
+    if (!res) {
+      return {
+        error: "Unenrollment failed!",
+        success: null,
+      };
+    }
+
+    revalidatePath("/", "layout");
+
+    return {
+      success: res,
+      error: null,
+    };
+  } catch (error) {
+    return {
+      error: "Unexpected error occured!",
+      success: null,
+    };
+  }
+};
+
+export const deleteCourse = async (courseId: string) => {
+  const session = await auth();
+
+  if (!session?.user) {
+    return {
+      error: "User not found",
+      success: null,
+    };
+  }
+
+  try {
+    const course = await prisma.course.findUnique({
+      where: {
+        id: courseId,
+      },
+    });
+
+    if (!course) {
+      return {
+        error: "Course not found",
+        success: null,
+      };
+    }
+
+    if (course.creatorId != session?.user?.id) {
+      return {
+        error: "You are not authorized to delete this course",
+        success: null,
+      };
+    }
+
+    const unenrollStudents = await prisma.enrollment.deleteMany({
+      where: {
+        courseId: courseId,
+      },
+    });
+
+    if (!unenrollStudents) {
+      return {
+        error: "Deletion failed!",
+        success: null,
+      };
+    }
+
+    const res = await prisma.course.delete({
+      where: {
+        id: courseId,
+      },
+    });
+
+    if (!res) {
+      return {
+        error: "Deletion failed!",
+        success: null,
+      };
+    }
+
+    revalidatePath("/", "layout");
+
+    return {
+      success: res,
+      error: null,
+    };
+  } catch (error) {
+    return {
+      error: "Unexpected error occured!",
+      success: null,
+    };
+  }
+};
