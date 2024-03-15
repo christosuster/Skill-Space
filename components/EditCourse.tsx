@@ -17,10 +17,10 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useState } from "react";
-import { deleteCourse } from "@/lib/actions";
+import { deleteCourse, deleteModule } from "@/lib/actions";
 import { toast } from "./ui/use-toast";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import { Loader2, TrashIcon } from "lucide-react";
 
 type EditCourseProps = {
   session: Session;
@@ -49,7 +49,11 @@ const EditCourse = (props: EditCourseProps) => {
   const { session, course, modules } = props;
 
   const [open, setOpen] = useState(false);
+  const [openModuleDeleteConfirmation, setOpenModuleDeleteConfirmation] =
+    useState(false);
   const [loading, setLoading] = useState(false);
+  const [loadingModuleDeletion, setLoadingModuleDeletion] = useState(false);
+  const [selectedModule, setSelectedModule] = useState<string | null>(null);
 
   const router = useRouter();
 
@@ -69,6 +73,23 @@ const EditCourse = (props: EditCourseProps) => {
     router.push("/created");
   };
 
+  const confirmModuleDelete = async () => {
+    setLoadingModuleDeletion(true);
+    const res = await deleteModule(selectedModule!);
+    if (res.error) {
+      toast({ title: res.error, variant: "destructive" });
+      setLoadingModuleDeletion(false);
+      return;
+    }
+    toast({
+      title: "Module Deleted!",
+      variant: "success",
+    });
+
+    router.refresh();
+    setLoadingModuleDeletion(false);
+  };
+
   return (
     <div className="grid grid-cols-12  gap-4">
       <AlertDialog open={open} onOpenChange={setOpen}>
@@ -83,6 +104,26 @@ const EditCourse = (props: EditCourseProps) => {
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={confirmDelete}>
+              Confirm
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      <AlertDialog
+        open={openModuleDeleteConfirmation}
+        onOpenChange={setOpenModuleDeleteConfirmation}
+      >
+        <AlertDialogContent className="">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              You are deleting this module from the course. This action cannot
+              be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmModuleDelete}>
               Confirm
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -135,7 +176,7 @@ const EditCourse = (props: EditCourseProps) => {
 
       <Card className="p-5 w-full col-span-12 md:col-span-6 lg:col-span-8">
         <h1 className="text-3xl text-center mb-10 w-full">Add New Module</h1>
-        <div className="flex flex-col lg:flex-row gap-4 overflow-hidden">
+        <div className="flex flex-col gap-4 overflow-hidden">
           <AddModule courseId={course.id} />
           <div className="w-full h-full max-h-96 overflow-y-auto mt-10 md:mt-0 flex flex-col gap-2">
             {modules.map((module, idx) => {
@@ -150,6 +191,22 @@ const EditCourse = (props: EditCourseProps) => {
                   <div className="text-left flex-1">
                     <h1 className="text-xl font-bold">{module.title}</h1>
                     <h1>{module.description}</h1>
+                  </div>
+                  <div className="flex justify-center items-center">
+                    {loadingModuleDeletion && selectedModule === module.id ? (
+                      <Loader2 className="animate-spin mr-2" />
+                    ) : (
+                      <Button
+                        onClick={() => {
+                          setSelectedModule(module.id);
+                          setOpenModuleDeleteConfirmation(true);
+                        }}
+                        variant={"destructive"}
+                        className="p-2"
+                      >
+                        <TrashIcon />
+                      </Button>
+                    )}
                   </div>
                 </div>
               );

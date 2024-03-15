@@ -328,9 +328,93 @@ export const deleteCourse = async (courseId: string) => {
       };
     }
 
+    const deleteModules = await prisma.module.deleteMany({
+      where: {
+        courseId: courseId,
+      },
+    });
+
+    if (!deleteModules) {
+      return {
+        error: "Deletion failed!",
+        success: null,
+      };
+    }
+
     const res = await prisma.course.delete({
       where: {
         id: courseId,
+      },
+    });
+
+    if (!res) {
+      return {
+        error: "Deletion failed!",
+        success: null,
+      };
+    }
+
+    revalidatePath("/", "layout");
+
+    return {
+      success: res,
+      error: null,
+    };
+  } catch (error) {
+    return {
+      error: "Unexpected error occured!",
+      success: null,
+    };
+  }
+};
+
+export const deleteModule = async (moduleId: string) => {
+  const session = await auth();
+
+  if (!session?.user) {
+    return {
+      error: "User not found",
+      success: null,
+    };
+  }
+
+  try {
+    const courseModule = await prisma.module.findUnique({
+      where: {
+        id: moduleId,
+      },
+    });
+
+    if (!courseModule) {
+      return {
+        error: "Module not found",
+        success: null,
+      };
+    }
+
+    const course = await prisma.course.findUnique({
+      where: {
+        id: courseModule.courseId,
+      },
+    });
+
+    if (!course) {
+      return {
+        error: "Course not found",
+        success: null,
+      };
+    }
+
+    if (course.creatorId != session?.user?.id) {
+      return {
+        error: "You are not authorized to delete this module",
+        success: null,
+      };
+    }
+
+    const res = await prisma.module.delete({
+      where: {
+        id: moduleId,
       },
     });
 

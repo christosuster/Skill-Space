@@ -61,7 +61,7 @@ const AddModule = ({ courseId }: { courseId: string }) => {
   });
 
   return (
-    <div className="w-full max-w-xl mx-auto">
+    <div className="w-full max-w-xl mx-auto mb-10">
       <form
         onSubmit={(e) => {
           e.preventDefault();
